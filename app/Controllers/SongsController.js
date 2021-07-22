@@ -13,7 +13,12 @@ function _drawResults() {
 }
 
 function _drawActive() {
-  document.getElementById("active").innerHTML = ProxyState.activeSong.activeTemplate
+  if (ProxyState.activeSong) {
+    document.getElementById("active").innerHTML = ProxyState.activeSong.activeTemplate
+  } else {
+    document.getElementById("active").innerHTML = ''
+  }
+
 }
 
 /**Draws the Users saved songs to the page */
@@ -81,9 +86,10 @@ export default class SongsController {
    */
   async removeSong(id) {
     try {
+      console.log(id)
       await songService.removeSong(id)
     } catch (error) {
-      console.error('There was an Issue deleting that song')
+      console.error('There was an Issue deleting that song ' + error)
     }
   }
 }
