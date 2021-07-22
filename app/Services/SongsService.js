@@ -1,6 +1,6 @@
 import { ProxyState } from "../AppState.js";
 import Song from "../Models/Song.js";
-import { sandBoxApi } from "./AxiosService.js";
+import { iTuneApi, sandBoxApi } from "./AxiosService.js";
 
 class SongsService {
   /**
@@ -14,10 +14,25 @@ class SongsService {
     $.getJSON(url)
       .then(res => {
         ProxyState.songs = res.results.map(rawData => new Song(rawData));
+        console.log(res)
       })
+
       .catch(err => {
         throw new Error(err);
       });
+  }
+
+  async getSong(id) {
+    let res = await iTuneApi.get('search?term=' + id)
+    console.log(res)
+    console.log("Id from the service " + id)
+    ProxyState.activeSong = res.data.results.map(s => new Song(s))
+    ProxyState.playlist = ProxyState.playlist
+    console.log(ProxyState.activeSong);
+    // const song = ProxyState.playlist.find(s => s._id === id)
+    // if (!song) {
+    //   throw new Error("invalid song Id")
+    // }
   }
 
   /**

@@ -11,9 +11,26 @@ export default class Song {
   }
 
   get Template() {
+    //console.log(this._id);
     return `
-
+    <div onclick="app.songsController.getSong('${this._id}')">
+    <img src="${this.albumArt}" alt="${this.album}">
+   <h3>${this.artist}</h3>
+   <p>${this.title}</p>
+    </div>
         `;
+  }
+
+  get activeTemplate() {
+    return `
+      <p>Now playing:</p>
+      <img src="${this.albumArt}" alt="${this.artist}">
+      <h2>${this.artist} - ${this.title}</h2>
+      <p>Ablum: ${this.album} | Buy now $${this.price}</p>
+      <audio controls
+          src="${this.preview}"></audio>
+      <button type="button" class="btn btn-primary">➕</button>
+    `
   }
 
   get playlistTemplate() {
