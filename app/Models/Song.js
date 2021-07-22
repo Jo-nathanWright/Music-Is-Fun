@@ -7,13 +7,13 @@ export default class Song {
     this.album = data.collectionName || data.album;
     this.price = data.trackPrice || data.price;
     this.preview = data.previewUrl || data.preview;
-    this._id = data.trackId || data._id;
+    this.id = data.trackId || data._id;
   }
 
   get Template() {
     //console.log(this._id);
     return `
-    <div onclick="app.songsController.getSong('${this._id}')">
+    <div onclick="app.songsController.getSong('${this.id}')">
     <img src="${this.albumArt}" alt="${this.album}">
    <h3>${this.artist}</h3>
    <p>${this.title}</p>
@@ -23,19 +23,25 @@ export default class Song {
 
   get activeTemplate() {
     return `
-      <p>Now playing:</p>
+      <h4>Now playing:</h4>
+      <div class="text-center">
       <img src="${this.albumArt}" alt="${this.artist}">
-      <h2>${this.artist} - ${this.title}</h2>
+      <h3>${this.artist} - ${this.title}</h3>
       <p>Ablum: ${this.album} | Buy now $${this.price}</p>
       <audio controls
           src="${this.preview}"></audio>
-      <button type="button" class="btn btn-primary">➕</button>
+      <button type="button" class="btn btn-primary" onclick="app.songsController.addSong('${this.id}')">➕</button>
+      </div>
     `
   }
 
   get playlistTemplate() {
     return `
-
+       <div class="bg-dark text-light text-center mb-2">
+           <p>${this.artist}</p>
+           <p>${this.title}</p>
+           <button type="button" class="btn btn-primary mb-1" onclick="app.songsController.removeSong('${this.id}')">Delete</button>
+       </div>
         `;
   }
 }

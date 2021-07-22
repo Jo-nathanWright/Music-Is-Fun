@@ -1,4 +1,5 @@
 import { ProxyState } from "../AppState.js";
+import { sandBoxApi } from "../Services/AxiosService.js";
 import songService from "../Services/SongsService.js";
 
 
@@ -16,7 +17,13 @@ function _drawActive() {
 }
 
 /**Draws the Users saved songs to the page */
-function _drawPlaylist() { }
+function _drawPlaylist() {
+  const playlist = ProxyState.playlist
+  let template = ''
+  playlist.forEach(p => template += p.playlistTemplate)
+  document.getElementById('playlist').innerHTML = template
+}
+
 
 //Public
 export default class SongsController {
@@ -24,6 +31,8 @@ export default class SongsController {
     //TODO Don't forget to register your listeners and get your data
     ProxyState.on('songs', _drawResults)
     ProxyState.on('activeSong', _drawActive)
+    ProxyState.on('playlist', _drawPlaylist)
+    this.getMySongs()
   }
 
   /**Takes in the form submission event and sends the query to the service */
@@ -46,15 +55,35 @@ export default class SongsController {
     }
 
   }
+
+  async getMySongs() {
+    try {
+      await songService.getMySongs()
+    } catch (error) {
+      console.error('There was an Issue getting your songs')
+    }
+  }
   /**
    * Takes in a song id and sends it to the service in order to add it to the users playlist
    * @param {string} id
    */
-  addSong(id) { }
+  async addSong(id) {
+    try {
+      await songService.addSong(id)
+    } catch (error) {
+      console.error('There was an Issue adding that song')
+    }
+  }
 
   /**
    * Takes in a song id to be removed from the users playlist and sends it to the server
    * @param {string} id
    */
-  removeSong(id) { }
+  async removeSong(id) {
+    try {
+      await songService.removeSong(id)
+    } catch (error) {
+      console.error('There was an Issue deleting that song')
+    }
+  }
 }

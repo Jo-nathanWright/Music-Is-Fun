@@ -1,6 +1,6 @@
 import { ProxyState } from "../AppState.js";
 import Song from "../Models/Song.js";
-import { iTuneApi, sandBoxApi } from "./AxiosService.js";
+import { sandBoxApi } from "./AxiosService.js";
 
 class SongsService {
   /**
@@ -23,22 +23,20 @@ class SongsService {
   }
 
   async getSong(id) {
-    let res = await iTuneApi.get('search?term=' + id)
-    console.log(res)
+    let activeSong = await ProxyState.songs.find(s => s.id == id)
+    // let res = await iTuneApi.get('search?term=' + id)
     console.log("Id from the service " + id)
-    ProxyState.activeSong = res.data.results.map(s => new Song(s))
-    ProxyState.playlist = ProxyState.playlist
+    ProxyState.activeSong = activeSong
+    // ProxyState.playlist = ProxyState.playlist
     console.log(ProxyState.activeSong);
-    // const song = ProxyState.playlist.find(s => s._id === id)
-    // if (!song) {
-    //   throw new Error("invalid song Id")
-    // }
   }
 
   /**
    * Retrieves the saved list of songs from the sandbox
    */
   async getMySongs() {
+    const res = await sandBoxApi.get()
+    ProxyState.playlist = res.data.map(p => new Song(p))
     //TODO What are you going to do with this result
   }
 
@@ -47,7 +45,12 @@ class SongsService {
    * Afterwords it will update the store to reflect saved info
    * @param {string} id
    */
-  addSong(id) {
+  async addSong(id) {
+    const res = await sandBoxApi.post('', ProxyState.activeSong)
+    console.log(res.data);
+    const newSong = new Song(res.data)
+    ProxyState.playlist = [...ProxyState.playlist, newSong]
+    ProxyState.activeSong = newSong
     //TODO you only have an id, you will need to find it in the store before you can post it
     //TODO After posting it what should you do?
   }
@@ -57,8 +60,11 @@ class SongsService {
    * Afterwords it will update the store to reflect saved info
    * @param {string} id
    */
-  removeSong(id) {
+  async removeSong(id) {
     //TODO Send the id to be deleted from the server then update the store
+    const res = await sandBoxApi.delete(ProxyState.activeSong.id)
+    ProxyState.playlist = ProxyState.playlist.filter(p => p.id != ProxyState.activeSong.id)
+    ProxyState.activeSong = null
   }
 }
 
